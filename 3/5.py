@@ -1,7 +1,7 @@
 from pwn import *
 
 f = open("./ID", "r")
-id = f.read()
+id = f.read().splitlines()[0]
 f.close()
 
 sh = process(['./bufbomb', '-u', id, '-n'])
