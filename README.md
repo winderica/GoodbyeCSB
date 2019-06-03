@@ -1,2 +1,1 @@
-# GoodbyeCSB
-CSB = Computer System Basics
+# GoodbyeICS
